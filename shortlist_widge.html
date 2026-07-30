@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Shortlisted Properties (React Component)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- React & Babel CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-light">
+
+    <div class="container my-5">
+        <div id="react-shortlist-app"></div>
+    </div>
+
+    <!-- React Component Script -->
+    <script type="text/babel">
+        function ShortlistApp() {
+            const [shortlists, setShortlists] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+
+            // Fetch shortlisted properties
+            React.useEffect(() => {
+                // Testing with User ID = 1
+                fetch('get_shortlist.php?user_id=1')
+                    .then(res => res.json())
+                    .then(data => {
+                        setShortlists(data.data || []);
+                        setLoading(false);
+                    })
+                    .catch(() => setLoading(false));
+            }, []);
+
+            if (loading) return <div class="text-center">Loading your shortlists...</div>;
+
+            return (
+                <div className="card shadow-sm p-4">
+                    <h3 className="mb-3 text-primary">❤️ My Shortlisted Accommodation (React Component)</h3>
+                    {shortlists.length === 0 ? (
+                        <p className="text-muted">No properties shortlisted yet.</p>
+                    ) : (
+                        <div className="row">
+                            {shortlists.map(item => (
+                                <div key={item.id} className="col-md-4 mb-3">
+                                    <div className="card h-100">
+                                        <div className="card-body">
+                                            <h5 className="card-title">{item.name}</h5>
+                                            <p className="card-text text-muted">{item.city}</p>
+                                            <span className="badge bg-success">₹{item.price} / mo</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('react-shortlist-app'));
+        root.render(<ShortlistApp />);
+    </script>
+</body>
+</html>
